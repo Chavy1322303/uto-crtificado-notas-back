@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="bo.edu.uto.dtic.certificadonotas.mappers.MenuMapper">
+
+    <resultMap id="menusMap" type="Enlaces">
+		<id column="id_enlace" property="id_enlace"/>
+		<result column="id_enlace_padre" property="id_enlace_padre"/>
+		<result column="id_estado" property="id_estado"/>
+		<result column="orden" property="orden"/>
+		<result column="nivel" property="nivel"/>
+		<result column="enlace" property="enlace"/>
+		<result column="ruta" property="ruta"/>
+		<result column="posicion" property="posicion"/>
+        <result column="id_rol" property="id_rol"/>
+		<collection property="enlaces" column="{id_enlace_padre=id_enlace,nivel=nivel,id_rol=id_rol}" ofType="Enlace" select="subMenus"/>
+	</resultMap>
+
+	<select id="getById" resultMap="menusMap">
+		select *
+            from public."_enlaces" e 
+                join public."_menus" m  on( m.id_enlace=e.id_enlace)
+            where
+                m."id_estado"
+                and e."id_estado" 
+                and e.nivel = 0
+                and m.id_rol = #{id_rol}
+            ;
+	</select>
+
+    <select id="subMenus" resultMap="menusMap">
+        select *
+        from public."_enlaces" e 
+            join public."_menus" m  on( m.id_enlace=e.id_enlace)
+        where
+            m."id_estado"
+            and e."id_estado" 
+            and e.id_enlace_padre = #{id_enlace_padre}
+            and e.nivel = #{nivel}+1
+            and m.id_rol = #{id_rol}
+        ;
+    </select>
+
+</mapper>

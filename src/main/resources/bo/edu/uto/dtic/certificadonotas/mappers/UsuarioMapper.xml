@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="bo.edu.uto.dtic.certificadonotas.mappers.UsuarioMapper">
+
+	<select id="getById" resultType="Usuario">
+		select *
+        from public."_usuarios" u 
+            join public.personas p  on (u.id_persona=p.id_persona)
+        where 
+            u."id_estado" 
+            and u.id_usuario = #{id}
+            ;
+	</select>
+
+
+</mapper>

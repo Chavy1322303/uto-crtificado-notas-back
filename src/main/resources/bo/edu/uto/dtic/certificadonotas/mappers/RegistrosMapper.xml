@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="bo.edu.uto.dtic.certificadonotas.mappers.RegistrosMapper">
+    <resultMap id="RegistroResultMap" type="Registro">
+		<id column = "id_estudiante" property = "id_estudiante"/>
+		<result column = "id_gestion" property = "id_gestion"/>
+		<result column = "_gestion" property = "_gestion"/>
+		<result column = "nombre" property = "nombre"/>
+		<result column = "programa" property = "programa"/>
+		<collection property="notas" ofType="Nota" resultMap="NotasResultMap" />
+	</resultMap>
+	
+	<resultMap id="NotasResultMap" type="Nota">
+		<result column = "sigla" property = "sigla"/>
+		<result column = "materia" property = "materia"/>
+		<result column = "hrs_totales" property = "hrs_totales"/>
+		<result column = "nf" property = "nf"/>
+		<result column = "nota" property = "nota"/>
+	</resultMap>
+
+	<select id="getByIdEstudianteAndIdGestion" resultMap="RegistroResultMap">
+		select e.id_estudiante
+			, g."_gestion"
+			, f.abrev
+			, p2.programa
+			, p.nombre
+			, m.sigla
+			, m.materia
+			, n.nf
+			, n.nota
+			, (m.hrs_teoricas + m.hrs_practicas + m.hrs_lab) as hrs_totales
+		from public.gestiones g 
+			join public.notas n on (g.id_gestion = n.id_gestion)
+			left join public.estudiantes e on (n.id_estudiante = e.id_estudiante)
+			left join public.programas p2 on (p2.id_programa = e.id_programa)
+			left join public.materias m on (n.sigla = m.sigla)
+			left join public.personas p on (n.id_persona = p.id_persona)
+			left join public.facultades f on (n.id_facultad = f.id_facultad)
+		where 
+			n.id_estudiante = #{id_estudiante}
+			and n.id_gestion = #{id_gestion}
+		order by p2.programa ,p.nombre, m.materia 
+		;
+	</select>
+
+	<select id="notasByIdFacultadAndIdGestion" resultMap="RegistroResultMap">
+        select e.id_estudiante
+			, g."_gestion"
+			, f.abrev
+			, p2.programa
+			, p.nombre
+			, m.sigla
+			, m.materia
+			, n.nf
+			, n.nota
+			, (m.hrs_teoricas + m.hrs_practicas + m.hrs_lab) as hrs_totales
+		from public.gestiones g 
+			join public.notas n on (g.id_gestion = n.id_gestion)
+			left join public.estudiantes e on (n.id_estudiante = e.id_estudiante)
+			left join public.carreras c on (n.id_carrera = c.id_carrera and e.id_carrera = c.id_carrera)
+			left join public.programas p2 on (c.id_carrera = p2.id_carrera and p2.id_programa = e.id_programa)
+			left join public.materias m on (n.sigla = m.sigla)
+			left join public.personas p on (n.id_persona = p.id_persona)
+			left join public.facultades f on (c.id_facultad = g.id_facultad and n.id_facultad = f.id_facultad)
+		where 
+			true
+			and n.id_facultad = #{id_facultad}
+			and n.id_gestion = #{id_gestion}
+		order by p.nombre, m.sigla, m.materia 
+	;
+	</select>
+
+	<select id="notasByIdCarreraAndIdGestion" resultMap="RegistroResultMap">
+        select e.id_estudiante
+			, g."_gestion"
+			, f.abrev
+			, p2.programa
+			, p.nombre
+			, m.sigla
+			, m.materia
+			, n.nf
+			, n.nota
+			, (m.hrs_teoricas + m.hrs_practicas + m.hrs_lab) as hrs_totales
+		from public.gestiones g 
+			join public.notas n on (g.id_gestion = n.id_gestion)
+			left join public.estudiantes e on (n.id_estudiante = e.id_estudiante)
+			left join public.carreras c on (n.id_carrera = c.id_carrera and e.id_carrera = c.id_carrera)
+			left join public.programas p2 on (c.id_carrera = p2.id_carrera and p2.id_programa = e.id_programa)
+			left join public.materias m on (n.sigla = m.sigla)
+			left join public.personas p on (n.id_persona = p.id_persona)
+			left join public.facultades f on (c.id_facultad = g.id_facultad and n.id_facultad = f.id_facultad)
+		where 
+			true
+			and n.id_carrera = #{id_carrera}
+			and n.id_gestion = #{id_gestion}
+		order by p.nombre, m.sigla, m.materia 
+	;
+	</select>
+
+</mapper>

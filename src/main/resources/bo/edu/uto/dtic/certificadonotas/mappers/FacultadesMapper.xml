@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="bo.edu.uto.dtic.certificadonotas.mappers.FacultadesMapper">
+    
+	<select id="filtrarFacultad" resultType="Facultad">
+        select id_facultad ,facultad ,abrev 
+        from  public.facultades f 
+        where 
+            f.facultad ilike '%FACULTAD%'
+        ;
+    </select>  
+    <select id="filtrarByAbrev" resultType="Facultad">
+        select id_facultad ,facultad ,abrev 
+        from  public.facultades f 
+        where 
+            f.abrev = #{abrev}
+        ;
+    </select> 
+
+    <select id="filtrarByFacultad" resultType="Facultad">
+        select distinct on (g.id_gestion , id_facultad) 
+            f.id_facultad
+            ,g.id_gestion 
+            ,g."_gestion"  
+            ,f.facultad 
+            from public.facultades f 
+                join public.notas n on (f.id_facultad = n.id_facultad)
+                join public.gestiones g  on (n.id_gestion = g.id_gestion)
+            where f.id_facultad = #{id_facultad}
+            order by g.id_gestion desc
+            ; 
+    </select> 
+    
+    <select id="permisoUsuario" resultType="Facultad">
+        select u.id_facultad 
+            from public.unidades u 
+                join "_usr_unidades" n on (u.id_unidad = n.id_unidad)
+                join "_usuarios" s on (n.id_usuario = s.id_usuario)
+            where 
+                s.id_usuario = #{id_usuario}
+            ; 
+    </select> 
+
+</mapper>

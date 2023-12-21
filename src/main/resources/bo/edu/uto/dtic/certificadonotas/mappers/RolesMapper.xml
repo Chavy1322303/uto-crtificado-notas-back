@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="bo.edu.uto.dtic.certificadonotas.mappers.RolesMapper">
+
+	<select id="getRolById" resultType="Rol">
+		select u.recordatorio ,r.rol ,u.id_usuario 
+			from public."_usuarios" u 
+				join public."_usr_roles" ur on (u.id_usuario=ur.id_usuario)
+				join public."_roles" r on (ur.id_rol=r.id_rol)
+			where 
+				u."id_estado" 
+				and ur."id_estado"
+				and r.id_sistema = 6 
+				and r.id_rol = #{id_rol}
+				and u.id_usuario = #{ id_usuario }
+		;
+	</select>
+
+	<select id="getAll" resultType="Rol">
+		select	
+			r.*
+		from public._roles r
+			join public."_usr_roles" ur on (r.id_rol = ur.id_rol)
+		where ur.id_usuario = #{ id_usuario }
+		;
+	</select>
+
+	<select id="getById" resultType="Rol">
+		select *
+			from public."_usuarios" u 
+				join public."_usr_roles" ur on (u.id_usuario=ur.id_usuario)
+				join public."_roles" r on (ur.id_rol=r.id_rol)
+			where 
+				u."id_estado" 
+				and ur."id_estado" 
+				and r.id_sistema = 6
+				and u.id_usuario = #{ id_usuario }
+		;
+	</select>
+
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="bo.edu.uto.dtic.certificadonotas.mappers.CandidatosMapper">
+
+	<select id="getAll" parameterType="Candidatos_ext" resultType="Candidatos_ext">
+		select	ca.id_candidato, ca.id_frente, ca.orden
+				, ca.id_persona, p.nombre, p.dip, ca.cargo
+		from	teu.candidatos ca
+				join public.personas p on p.id_persona=ca.id_persona
+		where	true
+				and ca.id_estado
+				and ca.id_frente=#{id_frente}
+				and (
+					p.nombre ilike #{nombre}
+					or p.dip ilike #{nombre}
+				)
+				and ca.cargo ilike #{cargo}
+		order by ca.orden
+		;
+	</select>
+
+	<select id="getById" resultType="Candidatos_ext">
+		select	ca.id_candidato, ca.id_frente, ca.orden
+				, ca.id_persona, p.nombre, p.dip, ca.cargo
+		from	teu.candidatos ca
+				join public.personas p on p.id_persona=ca.id_persona
+		where	true
+				and ca.id_estado
+				and ca.id_candidato=#{id}
+		;
+	</select>
+
+	<insert id="insert" parameterType="Candidatos_ext" useGeneratedKeys="true" keyProperty="id_candidato" keyColumn="id_candidato">
+		insert into teu.candidatos(id_frente, id_persona, cargo, orden, id_usuario)
+		values(#{id_frente}, #{id_persona}, #{cargo}, #{orden}, #{id_usuario})
+		;
+	</insert>
+
+	<update id="update" parameterType="Candidatos_ext">
+		update	teu.candidatos ca
+		set		cargo=#{cargo}, orden=#{orden}
+				, id_usuario=#{id_usuario}, fec_reg=now()
+		where	ca.id_estado
+				and ca.id_candidato=#{id_candidato}
+		;
+	</update>
+
+	<update id="delete" parameterType="Candidatos_ext">
+		update	teu.candidatos ca
+		set		id_estado=false
+				, id_usuario=#{id_usuario}, fec_reg=now()
+		where	ca.id_estado
+				and ca.id_candidato=#{id_candidato}
+		;
+	</update>
+
+</mapper>

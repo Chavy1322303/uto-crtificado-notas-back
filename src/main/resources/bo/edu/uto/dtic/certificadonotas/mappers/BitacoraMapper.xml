@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="bo.edu.uto.dtic.certificadonotas.mappers.BitacoraMapper">
+    
+    <select id="bitacoraByUsuario" resultType="Bitacora">
+        select u.id_facultad 
+            from public.unidades u 
+                join "_usr_unidades" n on (u.id_unidad = n.id_unidad)
+                join "_usuarios" s on (n.id_usuario = s.id_usuario)
+            where 
+                s.id_usuario = #{id_usuario}
+            ; 
+    </select> 
+
+    <insert id="insert" parameterType="Bitacora" useGeneratedKeys="true" keyProperty="id_bitacora" keyColumn="id_bitacora">
+		insert into public.bitacora_notas(id_usuario,id_rol,fecha,descripcion,nom_documento,tipo,id_gestion,id_estudiante,id_facultad,id_carrera,id_estado)
+		values(#{id_usuario},#{id_rol},#{fecha},#{descripcion},#{nom_documento},#{tipo},#{id_gestion},#{id_estudiante},#{id_facultad},#{id_carrera},#{id_estado})
+		;
+	</insert>
+</mapper>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="bo.edu.uto.dtic.certificadonotas.mappers.EstudiantesMapper">
+    
+	<select id="FilterByName" resultType="Estudiante">
+        select e.id_estudiante 
+            , f.abrev 
+            , g.programa 
+            , p.nombre
+        from public.personas p
+            join public.estudiantes e on (e.id_persona = p.id_persona)
+            join public.programas g on (e.id_programa = g.id_programa)
+            join public.facultades f on (e.id_facultad = f.id_facultad)
+        where 	
+            <!-- e."id_estado" and -->
+            (p.nombre_completo ilike #{cad} or p.nombre ilike #{cad} )
+        order by p.nombre 
+        ;
+    </select>
+
+    <select id="FilterByFacultad" resultType="Estudiante">
+        select e.id_estudiante 
+            , f.abrev 
+            , g.programa 
+            , p.nombre
+        from public.personas p
+            join public.estudiantes e on (e.id_persona = p.id_persona)
+            join public.programas g on (e.id_programa = g.id_programa)
+            join public.facultades f on (e.id_facultad = f.id_facultad)
+        where 	e."id_estado"
+            and (p.nombre_completo ilike #{cad} or p.nombre ilike #{cad} )
+            and f.id_facultad = #{id_facultad}
+        order by p.nombre 
+        ;
+    </select>
+
+    <select id="FilterByEstudiante" resultType="Estudiante">
+        select distinct on (g.id_gestion) g.id_gestion
+            , g."_gestion"
+            , e.id_estudiante 
+            , f.abrev
+            , p2.programa
+            , p.nombre
+        from public.gestiones g 
+            join public.notas n on (g.id_gestion = n.id_gestion)
+            left join public.estudiantes e on (n.id_estudiante = e.id_estudiante)
+            left join public.carreras c on (n.id_carrera = c.id_carrera and e.id_carrera = c.id_carrera)
+            left join public.programas p2 on (c.id_carrera = p2.id_carrera and p2.id_programa = e.id_programa)
+            left join public.personas p on (n.id_persona = p.id_persona)
+            left join public.facultades f on (c.id_facultad = g.id_facultad and n.id_facultad = f.id_facultad)
+        where 
+            <!-- e."id_estado" and  -->
+            n.id_estudiante = #{id_estudiante}
+        order by g.id_gestion desc
+        ;
+    </select>
+
+    <select id="FilterByGestion" resultType="Estudiante">
+        select distinct on (g.id_gestion) g.id_gestion 
+            , e.id_estudiante 
+            , f.abrev 
+            , r.programa 
+            , p.nombre 
+            , g."_gestion"  
+        from public.estudiantes e 
+            join public.personas p on (e.id_persona = p.id_persona)
+            join public.programas r on (e.id_programa = r.id_programa)
+            join public.facultades f on (e.id_facultad = f.id_facultad)
+            join public.notas n on (e.id_estudiante = n.id_estudiante)
+            join public.gestiones g on ( n.id_gestion = g.id_gestion)
+        where 	
+            n.id_estudiante = #{id_estudiante}
+        order by g.id_gestion desc
+        ;
+    </select>
+
+    <select id="FilterByCarrera" resultType="Estudiante">
+        select distinct on (n.id_estudiante, r.programa) n.id_estudiante 
+            , n.id_gestion 
+            , f.abrev  
+            , r.programa 
+            , p.nombre
+            , g."_gestion"    
+        from notas n	
+            join public.programas r on (n.id_programa = r.id_programa)
+            join public.facultades f on (n.id_facultad = f.id_facultad)
+            join public.personas p on (n.id_persona = p.id_persona)
+            join public.gestiones g on (n.id_gestion = g.id_gestion)
+        where 	n.id_carrera = #{id_carrera} and 
+            n.id_gestion = #{id_gestion}
+        order by r.programa
+        ;
+    </select>
+
+</mapper>
